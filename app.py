@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import openpyxl  #
 
 # Funktion til at processere Excel-fil
 def process_excel(file):
