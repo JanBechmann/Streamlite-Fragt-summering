@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
-import openpyxl  #
+import openpyxl  # Sørg for at openpyxl er importeret
 
 # Funktion til at processere Excel-fil
 def process_excel(file):
-    xls = pd.ExcelFile(file)
+    xls = pd.ExcelFile(file, engine="openpyxl")  # Angiv openpyxl som engine
     data_list = []
 
     for sheet_name in xls.sheet_names:
-        df = pd.read_excel(xls, sheet_name=sheet_name, header=None)
+        df = pd.read_excel(xls, sheet_name=sheet_name, header=None, engine="openpyxl")  # Angiv engine her også
         
         if df.shape[1] > 15:  # Tjek for minimum kolonner
             receiver_countries = df.iloc[:, 8]  # Kolonne 9 (nulindekseret)
@@ -30,7 +30,7 @@ def process_excel(file):
     missing_country_sum = missing_country_df["Amount"].sum().round(2)
     
     if missing_country_sum > 0:
-        missing_country_row = pd.DataFrame([{"Receiver Country": "", "Amount": missing_country_sum}])
+        missing_country_row = pd.DataFrame([{ "Receiver Country": "", "Amount": missing_country_sum }])
         summary_df = pd.concat([summary_df, missing_country_row], ignore_index=True)
     
     total_sum = summary_df["Amount"].sum().round(2)
