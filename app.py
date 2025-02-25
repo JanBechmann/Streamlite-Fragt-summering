@@ -20,9 +20,10 @@ def process_excel(file):
     
     combined_df = pd.concat(data_list, ignore_index=True)
     combined_df = combined_df[pd.to_numeric(combined_df["Amount"], errors="coerce").notna()]
-    combined_df["Amount"] = pd.to_numeric(combined_df["Amount"])
+    combined_df["Amount"] = pd.to_numeric(combined_df["Amount"], errors="coerce").round(2)
 
     summary_df = combined_df.groupby("Receiver Country", as_index=False)["Amount"].sum()
+    summary_df["Amount"] = summary_df["Amount"].round(2)
     
     # Håndter manglende landekoder
     missing_country_df = combined_df[combined_df["Receiver Country"].isna() | 
