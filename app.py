@@ -10,11 +10,15 @@ def process_excel(file):
     for sheet_name in xls.sheet_names:
         df = pd.read_excel(xls, sheet_name=sheet_name, header=None, engine="openpyxl")  # Angiv engine her også
         
-        if df.shape[1] > 15:  # Tjek for minimum kolonner
+        if df.shape[1] > 16:  # Tjek for minimum kolonner for generelle data
             receiver_countries = df.iloc[:, 8]  # Kolonne 9 (nulindekseret)
             amounts = df.iloc[:, 15]  # Kolonne 16 (nulindekseret)
             
-            filtered_data = pd.DataFrame({"Receiver Country": receiver_countries, "Amount": amounts})
+            additional_amounts = df.iloc[:, 16] if sheet_name == "UPS DE" else 0  # Kolonne 17 (nulindekseret) kun for UPS DE
+            
+            total_amounts = amounts + additional_amounts  # Samlet beløb
+            
+            filtered_data = pd.DataFrame({"Receiver Country": receiver_countries, "Amount": total_amounts})
             filtered_data_valid = filtered_data[filtered_data["Receiver Country"].astype(str).str.match(r"^[A-Z]{2}$")]
             data_list.append(filtered_data_valid)
     
