@@ -12,9 +12,9 @@ def process_excel(file):
         
         if df.shape[1] > 16:  # Tjek for minimum kolonner for generelle data
             receiver_countries = df.iloc[:, 8]  # Kolonne 9 (nulindekseret)
-            amounts = df.iloc[:, 15]  # Kolonne 16 (nulindekseret)
+            amounts = pd.to_numeric(df.iloc[:, 15], errors='coerce').fillna(0)  # Kolonne 16 (nulindekseret)
             
-            additional_amounts = df.iloc[:, 16] if sheet_name == "UPS DE" else 0  # Kolonne 17 (nulindekseret) kun for UPS DE
+            additional_amounts = pd.to_numeric(df.iloc[:, 16], errors='coerce').fillna(0) if sheet_name == "UPS DE" else 0  # Kolonne 17 (nulindekseret) kun for UPS DE
             
             total_amounts = amounts + additional_amounts  # Samlet beløb
             
@@ -24,7 +24,7 @@ def process_excel(file):
     
     combined_df = pd.concat(data_list, ignore_index=True)
     combined_df = combined_df[pd.to_numeric(combined_df["Amount"], errors="coerce").notna()]
-    combined_df["Amount"] = pd.to_numeric(combined_df["Amount"], errors="coerce").round(2)
+    combined_df["Amount"] = combined_df["Amount"].round(2)
 
     summary_df = combined_df.groupby("Receiver Country", as_index=False)["Amount"].sum()
     summary_df["Amount"] = summary_df["Amount"].round(2)
